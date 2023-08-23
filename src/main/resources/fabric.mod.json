@@ -1,0 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "player-search",
+	"version": "${version}",
+	"name": "Player Search",
+	"description": "Search for a player and find his skin, his uuid, his name history...",
+	"authors": [
+		"KGriffon"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/player-search",
+		"sources": "https://github.com/kgriff0n/player-search"
+	},
+	"license": "MIT",
+	"icon": "assets/player-search/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.kgriff0n.PlayerSearch"
+		],
+		"modmenu": [
+			"io.github.kgriff0n.ModMenuCompat"
+		]
+	},
+	"mixins": [
+		"player-search.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.14.21",
+		"minecraft": ">=1.20",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.discord": "https://discord.gg/ZeHm57BEyt"
+			}
+		}
+	}
+}

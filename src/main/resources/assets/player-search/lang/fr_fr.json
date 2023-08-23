@@ -1,0 +1,7 @@
+{
+  "playerSearch.title": "Recherche de Joueurs",
+  "gui.player_search.search_hint": "Entrez un nom d'utilisateur ou un uuid...",
+  "gui.player_search.button": "Rechercher",
+  "gui.player_search.name_history": "Historique des noms",
+  "gui.player_search.unknown": "Joueur Inconnu"
+}
