@@ -37,4 +37,5 @@ This command lets you search the name history of a player on the same server as 
 
 ### Credits
 
-Thanks to [enjarai](https://github.com/enjarai) for the code to display a player (from [Show Me Your Skin!](https://github.com/enjarai/show-me-your-skin)).
+Thanks to [enjarai](https://github.com/enjarai) for the code to display a player (from [Show Me Your Skin!](https://github.com/enjarai/show-me-your-skin)).  
+[Laby.net API](https://laby.net/api/docs) for name history.
