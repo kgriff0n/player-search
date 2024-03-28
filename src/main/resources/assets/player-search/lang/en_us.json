@@ -1,7 +1,8 @@
 {
   "playerSearch.title": "Player Search",
   "gui.player_search.search_hint": "Enter username or UUID...",
-  "gui.player_search.button": "Search",
+  "gui.player_search.search.button": "Search",
+  "gui.player_search.download.button": "Download",
   "gui.player_search.name_history": "Name History",
   "gui.player_search.unknown": "Unknown Player"
 }

@@ -6,6 +6,8 @@ import io.github.kgriff0n.PlayerSearch;
 import io.github.kgriff0n.util.GuiEntityRenderer;
 import io.github.kgriff0n.util.PlayerApi;
 import io.github.kgriff0n.util.dummy.DummyClientPlayerEntity;
+import kong.unirest.JsonNode;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -17,6 +19,13 @@ import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -39,6 +48,9 @@ public class PlayerScreen extends Screen {
     private Identifier skinIdentifier;
     private Identifier capeIdentifier;
     private String model;
+    private ButtonWidget downloadSkinButton; // New button for downloading skin
+
+    private static Path dir;
 
     public PlayerScreen(Screen parent, @Nullable GameProfile profile) {
         super(Text.translatable("playerSearch.title"));
@@ -50,7 +62,7 @@ public class PlayerScreen extends Screen {
     protected void init() {
         this.previousText = "";
         this.editBox = this.addDrawableChild(new EditBoxWidget(this.textRenderer, this.width / 84, this.height / 84, 300, 20, Text.translatable("gui.player_search.search_hint"), Text.literal("")));
-        this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.player_search.button"), button -> {
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.player_search.search.button"), button -> {
             String text = this.editBox.getText();
             if (text == this.previousText) return;
             JSONObject request;
@@ -87,6 +99,40 @@ public class PlayerScreen extends Screen {
             loadSKin(this.profile);
             this.firstLoad = false;
         }
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.player_search.download.button"), button -> {
+            String uuidHolder = this.playerUuid.toString();
+            String downloadUrl = "https://crafatar.com/skins/" + uuidHolder;
+            String fileName = uuidHolder + ".png"; // Name the file as per your requirement
+
+            dir = Paths.get(MinecraftClient.getInstance().runDirectory.getPath(), "downloads");
+            // Create the downloads directory if it doesn't exist
+            if (!Files.exists(dir)) {
+                try {
+                    Files.createDirectories(dir);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
+            // Download the file
+            try {
+                URL url = new URL(downloadUrl);
+                Path filePath = dir.resolve(fileName);
+
+                try (InputStream in = url.openStream();
+                     FileOutputStream out = new FileOutputStream(filePath.toFile())) {
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                    System.out.println("File downloaded successfully to: " + filePath);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).dimensions(8,  136, textRenderer.getWidth("Grab Skin") + 8, 20).build());
+
     }
 
     private void loadSKin(GameProfile profile) {
