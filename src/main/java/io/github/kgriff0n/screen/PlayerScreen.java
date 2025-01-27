@@ -1,7 +1,6 @@
 package io.github.kgriff0n.screen;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import io.github.kgriff0n.PlayerSearch;
 import io.github.kgriff0n.util.GuiEntityRenderer;
 import io.github.kgriff0n.util.PlayerApi;
@@ -10,9 +9,9 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EditBoxWidget;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -36,9 +35,7 @@ public class PlayerScreen extends Screen {
     private UUID playerUuid;
     private JSONArray nameHistory;
     private DummyClientPlayerEntity dummyClientPlayerEntity;
-    private Identifier skinIdentifier;
-    private Identifier capeIdentifier;
-    private String model;
+    private SkinTextures skinTextures;
 
     public PlayerScreen(Screen parent, @Nullable GameProfile profile) {
         super(Text.translatable("playerSearch.title"));
@@ -62,8 +59,7 @@ public class PlayerScreen extends Screen {
                     request = PlayerApi.getProfileFromName(text);
                 }
                 if (request == null) {
-                    this.skinIdentifier = null;
-                    this.capeIdentifier = null;
+                    this.skinTextures = null;
                     this.playerName = Text.translatable("gui.player_search.unknown").getString();
                     this.playerUuid = null;
                     this.nameHistory = null;
@@ -91,18 +87,9 @@ public class PlayerScreen extends Screen {
 
     private void loadSKin(GameProfile profile) {
         PlayerSearch.LOGGER.info("Request sent to Mojang API...");
-        mc.getSkinProvider().loadSkin(profile, (type, identifier, texture) -> {
-
-            if (type == MinecraftProfileTexture.Type.SKIN) {
-                this.skinIdentifier = identifier;
-            } else if (type == MinecraftProfileTexture.Type.CAPE) {
-                this.capeIdentifier = identifier;
-            }
-
-            this.model = texture.getMetadata("model");
-            if (this.model == null) this.model = "default";
-
-        }, true);
+        mc.getSkinProvider().fetchSkinTextures(profile).thenAccept((textures) -> {
+            skinTextures = textures;
+        });
     }
 
     @Override
@@ -112,12 +99,13 @@ public class PlayerScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
         int playerX = this.width / 12;
         int playerY = this.height / 2;
         int playerSize = this.height / 5;
         context.fill(playerX - this.width / 14, playerY - playerSize*2, playerX + this.width / 14, playerY + 10, 0x80000000);
-        this.dummyClientPlayerEntity = new DummyClientPlayerEntity(null, UUID.fromString("fffffff0-ffff-fff0-ffff-fff0ffffffff"), this.skinIdentifier, this.capeIdentifier, this.model);
+        this.dummyClientPlayerEntity = new DummyClientPlayerEntity(null, UUID.fromString("fffffff0-ffff-fff0-ffff-fff0ffffffff"), this.skinTextures);
         GuiEntityRenderer.drawEntity(context.getMatrices(), playerX, playerY, playerSize, 0, playerX - mouseX, playerY - playerSize*1.8 - mouseY, this.dummyClientPlayerEntity);
 
         int scaleFactor = this.width / 200;
@@ -134,8 +122,6 @@ public class PlayerScreen extends Screen {
             context.drawText(this.textRenderer, Text.translatable("gui.player_search.name_history").formatted(Formatting.UNDERLINE), this.width * 2 / 3, (this.height / 10) + 20, 0xFFFFFF, true);
             this.drawNameHistory(context, this.nameHistory, this.width * 2 / 3, this.height / 10 + 40);
         }
-
-        super.render(context, mouseX, mouseY, delta);
     }
 
     private void drawNameHistory(DrawContext context, JSONArray history, int x, int y) {
@@ -154,8 +140,10 @@ public class PlayerScreen extends Screen {
 
             if (date == null) {
                 date = "                      ";
-            } else {
+            } else if (date.toString().length() > 10) {
                 date = date.toString().substring(0, 10).replace("-", "/") + "   -   ";
+            } else {
+                date = date.toString().replace("-", "/") + "   -   ";
             }
 
             context.drawText(this.textRenderer, Text.literal(date + username), x, y+4, 0xFFFFFF, false);

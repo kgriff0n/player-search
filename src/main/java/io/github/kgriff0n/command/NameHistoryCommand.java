@@ -15,8 +15,8 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import static dev.xpple.clientarguments.arguments.CGameProfileArgumentType.gameProfile;
-import static dev.xpple.clientarguments.arguments.CGameProfileArgumentType.getCProfileArgument;
+import static dev.xpple.clientarguments.arguments.CGameProfileArgument.gameProfile;
+import static dev.xpple.clientarguments.arguments.CGameProfileArgument.getProfileArgument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
@@ -26,7 +26,7 @@ public class NameHistoryCommand {
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(literal("name-history")
                 .then(argument("player", gameProfile())
-                        .executes(ctx -> nameHistory(ctx.getSource(), getCProfileArgument(ctx, "player")))));
+                        .executes(ctx -> nameHistory(ctx.getSource(), getProfileArgument(ctx, "player")))));
     }
 
     private static int nameHistory(FabricClientCommandSource source, Collection<GameProfile> profiles) {

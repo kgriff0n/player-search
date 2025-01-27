@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-import static dev.xpple.clientarguments.arguments.CGameProfileArgumentType.gameProfile;
-import static dev.xpple.clientarguments.arguments.CGameProfileArgumentType.getCProfileArgument;
+import static dev.xpple.clientarguments.arguments.CGameProfileArgument.gameProfile;
+import static dev.xpple.clientarguments.arguments.CGameProfileArgument.getProfileArgument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
@@ -26,7 +26,7 @@ public class SearchCommand {
         dispatcher.register(literal("search")
                 .executes(ctx -> openScreen(ctx.getSource(), null))
                 .then(argument("player", gameProfile())
-                        .executes(ctx -> openScreen(ctx.getSource(), getCProfileArgument(ctx, "player")))));
+                        .executes(ctx -> openScreen(ctx.getSource(), getProfileArgument(ctx, "player")))));
     }
 
     private static int openScreen(FabricClientCommandSource source, @Nullable Collection<GameProfile> profiles) throws CommandSyntaxException {

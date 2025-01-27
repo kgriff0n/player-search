@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-//Credits: https://github.com/enjarai/show-me-your-skin
+//Credits: https://github.com/enjarai/cicada-lib
 public record CursedRegistryEntry<T>(T value, RegistryKey<? extends Registry<T>> key) implements RegistryEntry<T> {
     @Override
     public boolean hasKeyAndValue() {
@@ -32,6 +32,11 @@ public record CursedRegistryEntry<T>(T value, RegistryKey<? extends Registry<T>>
 
     @Override
     public boolean isIn(TagKey<T> tag) {
+        return false;
+    }
+
+    @Override
+    public boolean matches(RegistryEntry<T> entry) {
         return false;
     }
 
