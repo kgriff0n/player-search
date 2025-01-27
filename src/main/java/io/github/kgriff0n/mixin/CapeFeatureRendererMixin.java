@@ -6,7 +6,7 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.PlayerModelPart;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.client.render.entity.feature.CapeFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -35,13 +35,13 @@ public abstract class CapeFeatureRendererMixin extends FeatureRenderer<AbstractC
             if (itemStack.isOf(Items.ELYTRA)) {
                 return;
             }
-            if (abstractClientPlayerEntity.canRenderCapeTexture() && !abstractClientPlayerEntity.isInvisible() && abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE) && abstractClientPlayerEntity.getCapeTexture() != null) {
+            if (!abstractClientPlayerEntity.isInvisible() && abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE) && abstractClientPlayerEntity.getSkinTextures().capeTexture() != null) {
                 matrixStack.push();
                 matrixStack.translate(0.0f, 0.0f, 0.125f);
                 matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6));
                 matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(0));
                 matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
-                VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getCapeTexture()));
+                VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTextures().capeTexture()));
                 this.getContextModel().renderCape(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
                 matrixStack.pop();
                 ci.cancel();

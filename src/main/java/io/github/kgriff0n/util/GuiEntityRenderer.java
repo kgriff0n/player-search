@@ -31,6 +31,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.joml.Quaternionf;
 
 //Credits: https://github.com/enjarai/show-me-your-skin
@@ -64,9 +65,9 @@ public class GuiEntityRenderer {
 
     @SuppressWarnings("deprecation")
     private static void drawEntity(MatrixStack matrices, int x, int y, int size, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity) {
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.push();
-        matrixStack.translate(0.0, 0.0, 1000.0);
+        Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.pushMatrix();
+        matrixStack.translate(0.0F, 0.0F, 1000.0F);
         RenderSystem.applyModelViewMatrix();
         matrices.push();
         matrices.translate(x, y, -950.0);
@@ -87,7 +88,7 @@ public class GuiEntityRenderer {
         immediate.draw();
         matrices.pop();
         DiffuseLighting.enableGuiDepthLighting();
-        matrixStack.pop();
+        matrixStack.popMatrix();
         RenderSystem.applyModelViewMatrix();
     }
 }

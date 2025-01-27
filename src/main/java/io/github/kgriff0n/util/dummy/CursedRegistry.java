@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 
-//Credits: https://github.com/enjarai/show-me-your-skin
+//Credits: https://github.com/enjarai/cicada-lib
 @SuppressWarnings("deprecation")
 public record CursedRegistry<T>(RegistryKey<? extends Registry<T>> registryKey, Identifier defaultId, T defaultValue) implements Registry<T>, RegistryEntryOwner<T> {
 
@@ -66,13 +66,23 @@ public record CursedRegistry<T>(RegistryKey<? extends Registry<T>> registryKey, 
     }
 
     @Override
-    public Lifecycle getEntryLifecycle(T entry) {
-        return Lifecycle.experimental();
+    public Optional<net.minecraft.registry.entry.RegistryEntryInfo> getEntryInfo(RegistryKey<T> key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<RegistryEntry.Reference<T>> getEntry(Identifier id) {
+        return Optional.empty();
     }
 
     @Override
     public Lifecycle getLifecycle() {
         return Lifecycle.experimental();
+    }
+
+    @Override
+    public Optional<RegistryEntry.Reference<T>> getDefaultEntry() {
+        return Optional.empty();
     }
 
     @Override
@@ -121,11 +131,6 @@ public record CursedRegistry<T>(RegistryKey<? extends Registry<T>> registryKey, 
     }
 
     @Override
-    public Optional<RegistryEntry.Reference<T>> getEntry(RegistryKey<T> key) {
-        return Optional.of(RegistryEntry.Reference.standAlone(this, key));
-    }
-
-    @Override
     public RegistryEntry<T> getEntry(T value) {
         return RegistryEntry.of(value);
     }
@@ -133,6 +138,11 @@ public record CursedRegistry<T>(RegistryKey<? extends Registry<T>> registryKey, 
     @Override
     public Stream<RegistryEntry.Reference<T>> streamEntries() {
         return null;
+    }
+
+    @Override
+    public Optional<RegistryEntry.Reference<T>> getEntry(RegistryKey<T> key) {
+        return Optional.of(RegistryEntry.Reference.standAlone(this, key));
     }
 
     @Override
