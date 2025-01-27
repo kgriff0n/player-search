@@ -5,11 +5,13 @@ import io.github.kgriff0n.PlayerSearch;
 import io.github.kgriff0n.util.GuiEntityRenderer;
 import io.github.kgriff0n.util.PlayerApi;
 import io.github.kgriff0n.util.dummy.DummyClientPlayerEntity;
+import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EditBoxWidget;
 import net.minecraft.client.util.SkinTextures;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
@@ -70,7 +72,7 @@ public class PlayerScreen extends Screen {
                         this.nameHistory = PlayerApi.getNameHistory(this.playerUuid.toString());
                     });
                     this.profile = new GameProfile(this.playerUuid, this.playerName);
-                    loadSKin(this.profile);
+                    loadSKin(this.playerName);
                 }
             }
         }).dimensions(330, this.height / 84, textRenderer.getWidth("Search") + 10, 20).build());
@@ -80,16 +82,21 @@ public class PlayerScreen extends Screen {
             this.editBox.setText(this.playerName);
             this.previousText = this.playerName;
             CompletableFuture.runAsync(() -> this.nameHistory = PlayerApi.getNameHistory(this.playerUuid.toString()));
-            loadSKin(this.profile);
+            loadSKin(this.playerName);
             this.firstLoad = false;
         }
     }
 
-    private void loadSKin(GameProfile profile) {
+    private void loadSKin(String playerName) {
         PlayerSearch.LOGGER.info("Request sent to Mojang API...");
-        mc.getSkinProvider().fetchSkinTextures(profile).thenAccept((textures) -> {
-            skinTextures = textures;
-        });
+        SkullBlockEntity.fetchProfileByName(playerName).thenAcceptAsync(profile ->
+            profile.ifPresent(
+                    gameProfile -> mc.getSkinProvider().fetchSkinTextures(gameProfile).thenAcceptAsync(
+                            textures -> skinTextures = textures
+                    )
+            )
+        );
+
     }
 
     @Override
